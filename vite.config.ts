@@ -1,12 +1,15 @@
+import { join, resolve } from "node:path";
 import react from "@vitejs/plugin-react-swc";
-import { resolve, join } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
 import { dependencies, devDependencies } from "./package.json";
-// https://vitejs.dev/config/
+
 export default defineConfig({
-  plugins: [react(), dts({ rollupTypes: true })],
+  plugins: [
+    react(),
+    dts({ rollupTypes: true }), // Output .d.ts files
+  ],
   build: {
     target: "esnext",
     minify: false,
@@ -14,25 +17,18 @@ export default defineConfig({
       entry: resolve(__dirname, join("src", "index.ts")),
       fileName: "index",
       formats: ["es", "cjs"],
-      name: "internship-lib",
     },
     rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
+      // Exclude peer dependencies from the bundle to reduce bundle size
       external: [
-        ...Object.keys(devDependencies),
         ...Object.keys(dependencies),
+        ...Object.keys(devDependencies),
         "react/jsx-runtime",
       ],
       output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          react: "React",
-        },
         dir: "dist",
-        entryFileNames: "[name].js",
-        format: "es",
+        entryFileNames: "[name].cjs",
+        format: "cjs",
       },
     },
   },
