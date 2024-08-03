@@ -1,6 +1,6 @@
 import { Button } from "./button";
 import { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import { useRef } from "react";
 
 const meta = {
   component: Button,
@@ -30,11 +30,34 @@ export const FullWidth: Story = {
     ...Primary.args,
     fullWidth: true,
     children: "Full Width",
+    variant: "secondary",
   },
   render: (args) => {
-    const [count, setCount] = useState(0);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const anchorRef = useRef<HTMLAnchorElement>(null);
     return (
-      <Button {...args} onClick={() => setCount(count + 1)} children={count} />
+      <div>
+        <Button {...args} asChild>
+          <a href="https://google.com" target="_blank" ref={anchorRef}>
+            Go to google
+          </a>
+        </Button>
+        <Button
+          {...args}
+          ref={buttonRef}
+          onClick={() => alert("clicked nice button")}
+        >
+          Nice button
+        </Button>
+        <button onClick={() => buttonRef.current?.click()}>Button</button>
+      </div>
     );
+  },
+};
+
+export const AsLink: Story = {
+  args: {
+    ...Primary.args,
+    children: "Link",
   },
 };
